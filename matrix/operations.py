@@ -1,3 +1,66 @@
+def add_mat(a: list[list[float]], b: list[list[float]]) -> list[list[float]]:
+    """
+    Adds two matrices element-wise.
+    Args:
+        a (list[list[float]]): First matrix.
+        b (list[list[float]]): Second matrix.
+    Returns:
+        list[list[float]]: Resulting matrix after addition.
+    Raises:
+        ValueError: If matrices are empty or have incompatible shapes.
+    """
+    if not a or not a[0] or not b or not b[0]:
+        raise ValueError("Matrices must not be empty")
+    rows_a, cols_a = len(a), len(a[0])
+    rows_b, cols_b = len(b), len(b[0])
+    if rows_a != rows_b or cols_a != cols_b:
+        raise ValueError("Matrices must have the same shape for addition")
+    if any(len(row) != cols_a for row in a) or any(len(row) != cols_b for row in b):
+        raise ValueError("All rows in matrices must have the same length")
+    
+    return [[a[i][j] + b[i][j] for j in range(cols_a)] for i in range(rows_a)]
+
+def sub_mat(a: list[list[float]], b: list[list[float]]) -> list[list[float]]:
+    """
+    Subtracts matrix b from matrix a element-wise.
+    Args:
+        a (list[list[float]]): First matrix.
+        b (list[list[float]]): Second matrix.
+    Returns:
+        list[list[float]]: Resulting matrix after subtraction.
+    Raises:
+        ValueError: If matrices are empty or have incompatible shapes.
+    """
+    if not a or not a[0] or not b or not b[0]:
+        raise ValueError("Matrices must not be empty")
+    rows_a, cols_a = len(a), len(a[0])
+    rows_b, cols_b = len(b), len(b[0])
+    if rows_a != rows_b or cols_a != cols_b:
+        raise ValueError("Matrices must have the same shape for subtraction")
+    if any(len(row) != cols_a for row in a) or any(len(row) != cols_b for row in b):
+        raise ValueError("All rows in matrices must have the same length")
+    
+    return [[a[i][j] - b[i][j] for j in range(cols_a)] for i in range(rows_a)]
+
+def scalar_mul_mat(scalar: float, a: list[list[float]]) -> list[list[float]]:
+    """
+    Multiplies a matrix by a scalar.
+    Args:
+        scalar (float): The scalar value.
+        a (list[list[float]]): The input matrix.
+    Returns:
+        list[list[float]]: Resulting matrix after scalar multiplication.
+    Raises:
+        ValueError: If the matrix is empty.
+    """
+    if not a or not a[0]:
+        raise ValueError("Matrix must not be empty")
+    rows, cols = len(a), len(a[0])
+    if any(len(row) != cols for row in a):
+        raise ValueError("All rows in matrix must have the same length")
+    
+    return [[scalar * a[i][j] for j in range(cols)] for i in range(rows)]
+
 def mat_vec_mul(a: list[list[float]], b: list[float]) -> list[float]:
     """
     Multiplies a matrix by a vector.
@@ -6,42 +69,40 @@ def mat_vec_mul(a: list[list[float]], b: list[float]) -> list[float]:
         b (list[float]): A vector represented as a list.
     Returns:
         list[float]: The resulting vector after multiplication.
+    Raises:
+        ValueError: If matrix columns do not match vector size or matrix is empty.
     """
-    if not a or not b or len(a[0]) != len(b):
+    if not a or not a[0] or not b:
+        raise ValueError("Matrix and vector must not be empty")
+    cols = len(a[0])
+    if any(len(row) != cols for row in a):
+        raise ValueError("All rows in matrix must have the same length")
+    if cols != len(b):
         raise ValueError("Matrix columns must match vector size")
     
-    result = []
-    for row in a:
-        dot = sum(x * y for x, y in zip(row, b))
-        result.append(dot)
-    
-    return result
+    return [sum(x * y for x, y in zip(row, b)) for row in a]
 
-def mat_mul(a: list[list[int | float]], b: list[list[int | float]]) -> list[list[int | float]]:
-    """    Multiplies two matrices.
-    Args:
-        a (list[list[int | float]]): First matrix.
-        b (list[list[int | float]]): Second matrix.
-    Returns:
-        c (list[list[int | float]]): Resulting matrix after multiplication.
+def mat_mul(a: list[list[float]], b: list[list[float]]) -> list[list[float]]:
     """
-
-    rows_a, cols_a = len(a), len(a[0]) if a else 0
-    rows_b, cols_b = len(b), len(b[0]) if b else 0
-    
-    if cols_a != rows_b or cols_a == 0 or rows_b == 0:
+    Multiplies two matrices.
+    Args:
+        a (list[list[float]]): First matrix.
+        b (list[list[float]]): Second matrix.
+    Returns:
+        list[list[float]]: Resulting matrix after multiplication.
+    Raises:
+        ValueError: If matrix dimensions are incompatible or matrices are empty.
+    """
+    if not a or not a[0] or not b or not b[0]:
+        raise ValueError("Matrices must not be empty")
+    rows_a, cols_a = len(a), len(a[0])
+    rows_b, cols_b = len(b), len(b[0])
+    if any(len(row) != cols_a for row in a) or any(len(row) != cols_b for row in b):
+        raise ValueError("All rows in matrices must have the same length")
+    if cols_a != rows_b:
         raise ValueError("Matrix columns must match matrix rows")
     
-    # Initialize the result matrix with zeros
-    c = [[0] * cols_b for _ in range(rows_a)]
-    
-    # Matrix multiplication
-    for i in range(rows_a):
-        for j in range(cols_b):
-            for k in range(cols_a):
-                c[i][j] += a[i][k] * b[k][j]
-    
-    return c
+    return [[sum(a[i][k] * b[k][j] for k in range(cols_a)) for j in range(cols_b)] for i in range(rows_a)]
 
 def mat_mean(matrix: list[list[float]], mode: str) -> list[float]:
     """

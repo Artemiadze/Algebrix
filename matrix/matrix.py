@@ -18,39 +18,101 @@ class Matrix:
         return self.values[idx]
 
     def __add__(self, other: 'Matrix') -> 'Matrix':
-        if self.shape() != other.shape():
-            raise ValueError("Matrix shapes must match")
-        return Matrix([
-            [a + b for a, b in zip(row_a, row_b)]
-            for row_a, row_b in zip(self.values, other.values)
-        ])
-
-    def __mul__(self, other):
-        if isinstance(other, Vector):
-            try:
-                result = mat_vec_mul(self.values, other.values)
-                return Vector(result)
-            except ValueError as e:
-                raise ValueError("Matrix columns must match vector size") from e
-
-        elif isinstance(other, Matrix):
+        """
+        Adds two matrices using the + operator.
+        Args:
+            other (Matrix): The matrix to add.
+        Returns:
+            Matrix: The resulting matrix.
+        Raises:
+            TypeError: If other is not a Matrix.
+            ValueError: If matrices have incompatible shapes.
+        """
+        if not isinstance(other, Matrix):
+            raise TypeError("Can only add Matrix to Matrix")
+        try:
+            result = add_mat(self.values, other.values)
+            return Matrix(result)
+        except ValueError as e:
+            raise ValueError(str(e)) from e
+    
+    def __sub__(self, other: 'Matrix') -> 'Matrix':
+        """
+        Subtracts another matrix using the - operator.
+        Args:
+            other (Matrix): The matrix to subtract.
+        Returns:
+            Matrix: The resulting matrix.
+        Raises:
+            TypeError: If other is not a Matrix.
+            ValueError: If matrices have incompatible shapes.
+        """
+        if not isinstance(other, Matrix):
+            raise TypeError("Can only subtract Matrix from Matrix")
+        try:
+            result = sub_mat(self.values, other.values)
+            return Matrix(result)
+        except ValueError as e:
+            raise ValueError(str(e)) from e
+    
+    def __mul__(self, other) -> 'Matrix | Vector':
+        """
+        Multiplies the matrix by another matrix, vector, or scalar using the * operator.
+        Args:
+            other: The matrix, vector, or scalar to multiply by.
+        Returns:
+            Matrix or Vector: The resulting matrix or vector.
+        Raises:
+            TypeError: If other is not a Matrix, Vector, or scalar (int/float).
+            ValueError: If dimensions are incompatible.
+        """
+        if isinstance(other, Matrix):
             try:
                 result = mat_mul(self.values, other.values)
                 return Matrix(result)
             except ValueError as e:
                 raise ValueError("Incompatible matrix shapes for multiplication") from e
-
+        elif isinstance(other, Vector):
+            try:
+                result = mat_vec_mul(self.values, other.values)
+                return Vector(result)
+            except ValueError as e:
+                raise ValueError("Matrix columns must match vector size") from e
+        elif isinstance(other, (int, float)):
+            try:
+                result = scalar_mul_mat(other, self.values)
+                return Matrix(result)
+            except ValueError as e:
+                raise ValueError(str(e)) from e
         else:
-            raise TypeError("Matrix can only be multiplied by Vector or Matrix")
-
+            raise TypeError("Matrix can only be multiplied by Matrix, Vector, or scalar")
+    
+    def __rmul__(self, other) -> 'Matrix':
+        """
+        Handles scalar * Matrix multiplication.
+        Args:
+            other: The scalar (int/float).
+        Returns:
+            Matrix: The resulting matrix.
+        Raises:
+            TypeError: If other is not a scalar (int/float).
+            ValueError: If the matrix is empty.
+        """
+        if isinstance(other, (int, float)):
+            try:
+                result = scalar_mul_mat(other, self.values)
+                return Matrix(result)
+            except ValueError as e:
+                raise ValueError(str(e)) from e
+        else:
+            raise TypeError("Matrix can only be multiplied by a scalar on the left")
+        
     def T(self) -> 'Matrix':
         try:
             result = transpose_mat(self.values)
             return Matrix(result)
         except ValueError as e:
             raise ValueError("Matrix must not be empty") from e
-        
-    from operations import inverse_mat
 
     def inverse(self) -> 'Matrix':
         """
@@ -70,15 +132,6 @@ class Matrix:
         return (self.rows, self.cols)
     
     def reshape(self, new_shape: tuple[int, int]) -> 'Matrix':
-        """
-        Reshapes the matrix to a new shape while preserving the elements in row-major order.
-        Args:
-            new_shape (tuple[int, int]): The desired shape (new_rows, new_cols).
-        Returns:
-            Matrix: The reshaped matrix.
-        Raises:
-            ValueError: If the matrix is empty, new_shape is invalid, or sizes are incompatible.
-        """
         try:
             result = reshape_matrix(self.values, new_shape)
             return Matrix(result)
