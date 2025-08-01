@@ -23,6 +23,15 @@ class Vector:
 
     def __mul__(self, scalar: float) -> 'Vector':
         return Vector(vector_scalar_mul(self.values, scalar))
+    
+    def __rmul__(self, scalar: float) -> 'Vector':
+        return self * scalar
+    
+    def __eq__(self, other: 'Vector') -> bool:
+        return self.values == other.values
+
+    def __neg__(self) -> 'Vector':
+        return Vector([-x for x in self.values])
 
     def dot(self, other: 'Vector') -> float:
         return vector_dot(self.values, other.values)
