@@ -1,6 +1,6 @@
 [project]
 name = "algebrix"
-version = "1.0.0"
+version = "1.0.1"
 description = "Linear algebra on Python — вектора, матрицы, разложения"
 authors = [{ name="Vlasov Artyom", email="t0mi.v@yandex.ru" }]
 license = "MIT"
