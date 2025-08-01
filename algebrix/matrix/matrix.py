@@ -1,4 +1,4 @@
-from vector import Vector
+from ..vector.vector import Vector
 from .operations import *
 
 class Matrix:
