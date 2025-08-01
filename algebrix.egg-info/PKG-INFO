@@ -1,6 +1,6 @@
 Metadata-Version: 2.4
 Name: algebrix
-Version: 1.0.0
+Version: 1.0.1
 Summary: Linear algebra on Python — вектора, матрицы, разложения
 Author-email: Vlasov Artyom <t0mi.v@yandex.ru>
 License-Expression: MIT
