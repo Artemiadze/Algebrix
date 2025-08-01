@@ -5,7 +5,7 @@ description = "Linear algebra on Python — вектора, матрицы, ра
 authors = [{ name="Vlasov Artyom", email="t0mi.v@yandex.ru" }]
 license = "MIT"
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 
 [project.urls]
 Homepage = "https://github.com/Artemiadze/algebrix"
